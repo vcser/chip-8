@@ -68,6 +68,7 @@ void Renderer::draw(Display *display) {
     shader.set_uniform("view", camera.get_view());
     shader.set_uniform("projection", camera.get_projection());
 
+    shader.set_uniform("color", white);
     glBindVertexArray(vao);
     for (int k = 0; k < 32; k++) {
         for (int j = 0; j < 64; j++) {
@@ -76,7 +77,6 @@ void Renderer::draw(Display *display) {
                 model = glm::translate(glm::mat4(1), glm::vec3(j*20, k*20, 0)) *
                     glm::scale(glm::mat4(1.0f), glm::vec3(20.0f, 20.0f, 1.0f));
                 shader.set_uniform("model", model);
-                shader.set_uniform("color", white);
                 glDrawArrays(GL_TRIANGLES, 0, 6);
             }
         }

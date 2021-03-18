@@ -248,7 +248,7 @@ void Computer::execute(u16 opcode) {
             i += v[x];
             break;
         case 0x29:
-            i = 0x50 + v[x];
+            i = 0x50 + 5*v[x];
             break;
         case 0x33:
             {
