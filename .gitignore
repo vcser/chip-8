@@ -1,0 +1,6 @@
+.vscode/
+obj/
+chip-8*
+*.txt
+*.exe
+vendor/glfw-build/
