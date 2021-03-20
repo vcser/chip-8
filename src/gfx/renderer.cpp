@@ -199,15 +199,64 @@ static void cpu_state(Computer &computer) {
 static void virtual_keyboard(Computer &computer) {
     if (ImGui::Begin("Keyboard", &show_keyboard)) {
         char text[2];
-        for (int i = 1; i <= 16; i++) {
-            std::sprintf(text, "%X", i-1);
+        for (int i = 1; i <= 3; i++) {
+            std::sprintf(text, "%X", i);
             if (ImGui::Button(text, ImVec2(50,50)) || ImGui::IsItemActive())
-                computer.keyboard[i-1] = 1;
+                computer.keyboard[i] = 1;
             else
-                computer.keyboard[i-1] = 0;
-            if (i % 4)
-                ImGui::SameLine();
+                computer.keyboard[i] = 0;
+            ImGui::SameLine();
         }
+        if (ImGui::Button("C", ImVec2(50,50)) || ImGui::IsItemActive())
+                computer.keyboard[0xC] = 1;
+        else
+            computer.keyboard[0xC] = 0;
+
+        for (int i = 4; i <= 6; i++) {
+            std::sprintf(text, "%X", i);
+            if (ImGui::Button(text, ImVec2(50,50)) || ImGui::IsItemActive())
+                computer.keyboard[i] = 1;
+            else
+                computer.keyboard[i] = 0;
+            ImGui::SameLine();
+        }
+        if (ImGui::Button("D", ImVec2(50,50)) || ImGui::IsItemActive())
+                computer.keyboard[0xD] = 1;
+        else
+            computer.keyboard[0xD] = 0;
+        
+        for (int i = 7; i <= 9; i++) {
+            std::sprintf(text, "%X", i);
+            if (ImGui::Button(text, ImVec2(50,50)) || ImGui::IsItemActive())
+                computer.keyboard[i] = 1;
+            else
+                computer.keyboard[i] = 0;
+            ImGui::SameLine();
+        }
+        if (ImGui::Button("E", ImVec2(50,50)) || ImGui::IsItemActive())
+                computer.keyboard[0xE] = 1;
+        else
+            computer.keyboard[0xE] = 0;
+        
+        if (ImGui::Button("A", ImVec2(50,50)) || ImGui::IsItemActive())
+                computer.keyboard[0xA] = 1;
+        else
+            computer.keyboard[0xA] = 0;
+        ImGui::SameLine();
+        if (ImGui::Button("0", ImVec2(50,50)) || ImGui::IsItemActive())
+                computer.keyboard[0x0] = 1;
+        else
+            computer.keyboard[0x0] = 0;
+        ImGui::SameLine();
+        if (ImGui::Button("B", ImVec2(50,50)) || ImGui::IsItemActive())
+                computer.keyboard[0xB] = 1;
+        else
+            computer.keyboard[0xB] = 0;
+        ImGui::SameLine();
+        if (ImGui::Button("F", ImVec2(50,50)) || ImGui::IsItemActive())
+                computer.keyboard[0xF] = 1;
+        else
+            computer.keyboard[0xF] = 0;
     }
     ImGui::End();
 }
