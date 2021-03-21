@@ -2,6 +2,7 @@
 chip-8 interpreter written in c++ using GLFW, Opengl and ImGui.
 
 ## Screenshots
+![](screenshots/3.gif)
 ![ibm logo](screenshots/1.png)
 ![space invaders](screenshots/2.png)
 
