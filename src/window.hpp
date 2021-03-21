@@ -11,6 +11,7 @@ class Window {
         Window(const int width, const int height, const char *title);
         void destroy();
         void print(Computer &c8);
+        void process_input(Computer &computer);
 
         GLFWwindow *handle;
     private:

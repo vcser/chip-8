@@ -13,6 +13,7 @@
 #endif
 
 #include <chrono>
+#include <mutex>
 #include "computer.hpp"
 #include "window.hpp"
 
@@ -31,6 +32,11 @@ int main(int argc, char *argv[]) {
     Chip_ocho::init();
     Window window(1280, 660, "CHIP-8");
 
+    std::mutex m;
+
+    std::thread t1(Chip_ocho::check_timers, std::ref(computer));
+    std::thread t2(Chip_ocho::loop, std::ref(computer));
+
     ImGui::CreateContext();
     ImGui_ImplGlfw_InitForOpenGL(window.handle, true);
     ImGui_ImplOpenGL3_Init();
@@ -44,13 +50,18 @@ int main(int argc, char *argv[]) {
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        computer.loop();
+        window.process_input(computer);
+        //computer.loop();
+        m.lock();
         window.print(computer);
+        m.unlock();
 
         glfwSwapBuffers(window.handle);
         //glFlush();
         glfwPollEvents();
     }
+
+    computer.state = 3;
 
     ImGui_ImplGlfw_Shutdown();
     ImGui_ImplOpenGL3_Shutdown();
@@ -58,5 +69,7 @@ int main(int argc, char *argv[]) {
 
     window.destroy();
     Chip_ocho::exit();
+    t1.join();
+    t2.join();
     return EXIT_SUCCESS;
 }

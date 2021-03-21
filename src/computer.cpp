@@ -3,12 +3,15 @@
 #include <ctime>
 #include <cstring>
 #include <iostream>
+#include <thread>
+#include <chrono>
 #include "computer.hpp"
 
 enum State {
     RUNNING,
     STEP,
     PAUSED,
+    SHUTDOWN,
 };
 
 Computer::Computer() {
@@ -36,7 +39,8 @@ Computer::Computer() {
     display = new Display();
     std::memset(v, 0, sizeof(v));
     std::memset(stack, 0, sizeof(stack));
-    state = PAUSED;
+    state = RUNNING;
+    speed = 1000;
     reset();
 }
 
@@ -50,20 +54,36 @@ void Computer::loop() {
     else if (state == STEP) {
         u16 opcode = fetch();
         execute(opcode);
-        if (dt > 0)
-            dt--;
-        if (st > 0)
-            st--;
         state = PAUSED;
     } else {
         u16 opcode = fetch();
         execute(opcode);
-        if (dt > 0)
-            dt--;
-        if (st > 0)
-            st--;
     }
+}
 
+void Chip_ocho::loop(Computer &computer) {
+    while (computer.state != SHUTDOWN) {
+        if (computer.state == STEP) {
+            u16 opcode = computer.fetch();
+            computer.execute(opcode);
+            computer.state = PAUSED;
+        } else if (computer.state == RUNNING) {
+            u16 opcode = computer.fetch();
+            computer.execute(opcode);
+        } else if (computer.state == PAUSED)
+            ;
+        std::this_thread::sleep_for(std::chrono::microseconds(computer.speed));
+    }
+}
+
+void Chip_ocho::check_timers(Computer &computer) {
+    while (computer.state != SHUTDOWN) {
+        if (computer.dt > 0)
+            computer.dt--;
+        if (computer.st > 0)
+            computer.st--;
+        std::this_thread::sleep_for(std::chrono::microseconds(16666));
+    }
 }
 
 void Computer::load(const char *path) {

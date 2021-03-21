@@ -5,6 +5,7 @@
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <string>
+#include <mutex>
 
 #include "renderer.hpp"
 //#include "shader.hpp"
@@ -16,6 +17,7 @@ static void virtual_keyboard(Computer &computer);
 
 static bool show_cpu_state = false;
 static bool show_keyboard = false;
+static std::mutex m;
 
 extern const double delta_time;
 
@@ -32,7 +34,7 @@ void Camera::update_vectors() {
 }
 
 Renderer::Renderer() {
-    shader = Shader("res/shaders/vertex.vs", "res/shaders/fragment.fs");
+    shader = Shader("res/shaders/vertex.glsl", "res/shaders/fragment.glsl");
     float square[] = {
         0.0f, 0.0f,
         1.0f, 0.0f,
@@ -85,6 +87,7 @@ void Renderer::draw(Display *display) {
 }
 
 void Renderer::gui(Computer &computer) {
+    m.lock();
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
@@ -103,6 +106,11 @@ void Renderer::gui(Computer &computer) {
                 ImGui::ColorEdit3("Background", &black[0]);
                 ImGui::EndMenu();
             }
+            if (ImGui::BeginMenu("Speed")) {
+                static const int min = 1;
+                ImGui::DragScalar("##speed", ImGuiDataType_U32, &computer.speed, 1, &min);
+                ImGui::EndMenu();
+            }
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("View")) {
@@ -112,14 +120,17 @@ void Renderer::gui(Computer &computer) {
         }
         if (ImGui::BeginMenu("Emulation")) {
             if (computer.state == 0) {
-                if (ImGui::Button("Pause"))
+                if (ImGui::Button("Pause")) {
                     computer.state = 2;
+                }
             } else {
-                if (ImGui::Button("Run"))
+                if (ImGui::Button("Run")) {
                     computer.state = 0;
+                }
             }
-            if (ImGui::Button("Step"))
+            if (ImGui::Button("Step")) {
                 computer.state = 1;
+            }
             if (ImGui::Button("Reset"))
                 computer.reset();
 
@@ -130,6 +141,7 @@ void Renderer::gui(Computer &computer) {
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    m.unlock();
 }
 
 static void cpu_state(Computer &computer) {
@@ -192,6 +204,8 @@ static void cpu_state(Computer &computer) {
                 ImGui::EndTable();
             }
         }
+
+        ImGui::Text("Chip-8 state: %d", computer.state);
     }
     ImGui::End();
 }

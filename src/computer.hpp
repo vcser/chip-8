@@ -25,6 +25,7 @@ class Computer {
         u8 keyboard[16];
         unsigned int state;
         unsigned long long int step_count;
+        unsigned int speed;
     private:
 };
 
@@ -36,5 +37,10 @@ struct Display {
     private:
 
 };
+
+namespace Chip_ocho {
+    void check_timers(Computer &computer);
+    void loop(Computer &computer);
+}
 
 #endif
